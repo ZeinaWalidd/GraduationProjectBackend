@@ -23,7 +23,10 @@ router.get("/", authenticateToken, async (req, res) => {
         }
 
         // Fetch user details including profile picture
-        const [user] = await pool.query("SELECT name, username, phone_number, email, profile_picture FROM user WHERE user_id = ?", [userId]);
+        const [user] = await pool.query(
+            "SELECT name, username, phone_number, email, profile_picture FROM user WHERE user_id = ?", 
+            [userId]
+        );
 
         if (!user.length) {
             return res.status(404).json({ error: "User not found" });
@@ -32,7 +35,10 @@ router.get("/", authenticateToken, async (req, res) => {
         // Create absolute URL for profile picture if it exists
         let absoluteProfilePicturePath = null;
         if (user[0].profile_picture) {
-            absoluteProfilePicturePath = `${getServerUrl(req)}${user[0].profile_picture}`;
+            const profilePicturePath = user[0].profile_picture.startsWith('/') 
+                ? user[0].profile_picture 
+                : `/${user[0].profile_picture}`;
+            absoluteProfilePicturePath = `${getServerUrl(req)}${profilePicturePath}`;
         }
 
         const response = {
@@ -51,7 +57,7 @@ router.get("/", authenticateToken, async (req, res) => {
                 "SOS Emergency",
                 "Safe Routes",
                 "Fake Call",
-                "Incident Reporting",
+                "Report",
                 "Home",
                 "Store",
                 "SOS",
@@ -60,10 +66,9 @@ router.get("/", authenticateToken, async (req, res) => {
             ]
         };
 
-        console.log("✅ Sending home page response:", response);
         res.status(200).json(response);
     } catch (error) {
-        console.error("❌ Error fetching home page data:", error);
+        console.error("❌ Error in home route:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });

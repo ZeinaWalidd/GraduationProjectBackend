@@ -406,16 +406,15 @@ const StoreController = {
                 const [orderResult] = await connection.query(
                     `INSERT INTO orders (
                         user_id, total_amount, shipping_address_street, shipping_address_city,
-                        shipping_address_state, shipping_address_zipcode, shipping_address_country,
+                        shipping_address_state, shipping_address_country,
                         payment_method
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
                     [
                         userId,
                         items.reduce((total, item) => total + (item.price * item.quantity), 0),
                         shippingAddress.street,
                         shippingAddress.city,
                         shippingAddress.state,
-                        shippingAddress.zipCode,
                         shippingAddress.country,
                         paymentMethod
                     ]
@@ -453,7 +452,6 @@ const StoreController = {
                         o.shipping_address_street,
                         o.shipping_address_city,
                         o.shipping_address_state,
-                        o.shipping_address_zipcode,
                         o.shipping_address_country,
                         o.payment_method,
                         o.payment_status,
@@ -493,7 +491,6 @@ const StoreController = {
                     o.shipping_address_street,
                     o.shipping_address_city,
                     o.shipping_address_state,
-                    o.shipping_address_zipcode,
                     o.shipping_address_country,
                     o.payment_method,
                     o.payment_status,
@@ -639,7 +636,7 @@ const StoreController = {
             }
 
             // Validate shipping address fields
-            const requiredAddressFields = ['street', 'city', 'state', 'zipCode', 'country'];
+            const requiredAddressFields = ['street', 'city', 'state', 'country'];
             for (const field of requiredAddressFields) {
                 if (!shippingAddress[field]) {
                     return res.status(400).json({ 
@@ -670,7 +667,6 @@ const StoreController = {
                 shipping_address_street: shippingAddress.street,
                 shipping_address_city: shippingAddress.city,
                 shipping_address_state: shippingAddress.state,
-                shipping_address_zipcode: shippingAddress.zipCode,
                 shipping_address_country: shippingAddress.country,
                 payment_method: paymentMethod,
                 payment_status: paymentMethod === 'cash' ? 'pending' : 'processing',

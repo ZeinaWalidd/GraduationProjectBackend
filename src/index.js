@@ -8,6 +8,7 @@ const soseRoutes = require("./routes/sosemergency");
 const sosRoutes = require("./routes/sos");
 const storeRoutes = require("./routes/store");
 const tutorialsRoutes = require("./routes/tutorials");
+const reportsRoutes = require("./routes/reports");
 const cors = require("cors");
 const path = require("path");
 const session = require("express-session");
@@ -25,7 +26,8 @@ app.use(cookieParser());
 const imagesDir = path.join(__dirname, "../public/images");
 const productsDir = path.join(imagesDir, "products");
 const profilesDir = path.join(imagesDir, "profiles");
-[imagesDir, productsDir, profilesDir].forEach(dir => {
+const reportsDir = path.join(imagesDir, "reports");
+[imagesDir, productsDir, profilesDir, reportsDir].forEach(dir => {
   if (!fs.existsSync(dir)) {
     console.log(`Creating directory: ${dir}`);
     fs.mkdirSync(dir, { recursive: true });
@@ -35,7 +37,7 @@ const profilesDir = path.join(imagesDir, "profiles");
 
 // Middleware
 const corsOptions = {
-  origin: "http://172.20.10.2", // Correct React Native dev server URL
+  origin: "http://172.20.10.18", // Correct React Native dev server URL
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 };
@@ -76,6 +78,7 @@ app.get("/signup", (req, res) => res.render("signup"));
 // Serve static files from the public directory
 app.use('/images', express.static(path.join(__dirname, '../public/images')));
 app.use(express.static(path.join(__dirname, '../public')));
+app.use('/videos', express.static(path.join(__dirname, '../public/videos')));
 
 // API Routes
 app.use("/user", userRoutes);
@@ -87,6 +90,8 @@ app.use("/sos", sosRoutes);
 app.use("/store", storeRoutes); // Keep this for backward compatibility
 app.use("/", storeRoutes); // Add root-level mount for store routes
 app.use("/tutorials", tutorialsRoutes);
+app.use("/reports", reportsRoutes);
+app.use("/videos", require("./routes/videos"));
 app.use((req, res, next) => {
   console.log('Session Data:', req.session);
   next();
